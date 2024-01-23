@@ -27,7 +27,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .node-hello-master/Dockerfile 
+        context: .github/workflows
         push: true
         tags: nagagogulan/node1:tagname
 
