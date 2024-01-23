@@ -22,7 +22,6 @@ jobs:
       uses: docker/login-action@v2
       with:
         username: nagagogulan
-
         password: dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A
 
     - name: Build and push Docker image
