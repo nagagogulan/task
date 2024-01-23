@@ -29,6 +29,6 @@ jobs:
       with:
         context: .github/workflows
         push: true
-        tags: nagagogulan/node1:3
+        tags: nagagogulan/node1:5
 
    
