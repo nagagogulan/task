@@ -29,19 +29,6 @@ jobs:
       with:
         context: .github/workflows
         push: true
-        tags: nagagogulan/node1:tagname
+        tags: nagagogulan/node1:2
 
-    - name: Cleanup older Docker images
-      run: |
-        REPO="integrationninjas/nodejs-app"
-        API_URL="https://hub.docker.com/v2/repositories/$REPO/tags"
-        TAGS=$(curl -s -u "nagagogulan:dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A" "$API_URL" | jq -r '.results | .[].name')
-        SORTED_TAGS=($(echo "${TAGS[@]}" | tr ' ' '\n' | sort -V))
-        KEEP_TAGS=("${SORTED_TAGS[@]: -2}")
-
-        for tag in "${SORTED_TAGS[@]}"; do
-          if [[ ! " ${KEEP_TAGS[@]} " =~ " ${tag} " ]]; then
-            echo "Deleting tag: $tag"
-            curl -X DELETE -u "nagagogulan:dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A" "$API_URL/$tag/"
-          fi
-        done
+   
