@@ -27,7 +27,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: . # Set the context to the root directory of your project
+        context: .node-hello-master/Dockerfile 
         push: true
         tags: nagagogulan/node1:tagname
 
