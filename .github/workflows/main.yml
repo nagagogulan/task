@@ -30,19 +30,18 @@ jobs:
         context: .github/workflows
         push: true
         tags: nagagogulan/node1:latest
-        
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
     - name: Cleanup older Docker images
       run: |
         REPO="integrationninjas/nodejs-app"
         API_URL="https://hub.docker.com/v2/repositories/$REPO/tags"
         TAGS=$(curl -s -u "nagagogulan:dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A" "$API_URL" | jq -r '.results | .[].name')
-        echo "All tags: $TAGS"
-
         SORTED_TAGS=($(echo "${TAGS[@]}" | tr ' ' '\n' | sort -V))
-        echo "Sorted tags: ${SORTED_TAGS[@]}"
-
         KEEP_TAGS=("${SORTED_TAGS[@]: -2}")
-        echo "Tags to keep: ${KEEP_TAGS[@]}"
 
         for tag in "${SORTED_TAGS[@]}"; do
           if [[ ! " ${KEEP_TAGS[@]} " =~ " ${tag} " ]]; then
