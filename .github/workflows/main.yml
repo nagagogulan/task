@@ -1,30 +1,40 @@
-name: Node.js CI/CD
+name: Build and Push to Docker Hub
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: self-hosted
-    strategy:
-      matrix:
-        node-version:
-          - '14'
+    runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        node-version: '14' # Choose the appropriate Node.js version
 
-    - name: Install dependencies
-      run: npm ci
+   
 
-    - name: Set up environment variables
-      run: echo "${{ secrets.PROD_ENV_FILE }}" > .env
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+          ecr: auto
+          username: nagagogulan
+          password: dckr_pat_X0rWbGoWE_nPgoQA9wDq7IN1A8c
 
-    # Add your additional steps for testing, building, or deploying here
+
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+       context: ./Dockerhub
+          
+       push: true
+       tags: nagagogulan/node1:tagname
+       
+       
