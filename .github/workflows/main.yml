@@ -45,4 +45,3 @@ jobs:
             curl -X DELETE -u "nagagogulan:dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A" "$API_URL/$tag/"
           fi
         done
-   
