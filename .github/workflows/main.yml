@@ -29,7 +29,7 @@ jobs:
       with:
         context: .github/workflows
         push: true
-        tags: nagagogulan/node1:5
+        tags: nagagogulan/node1:latest
         
     - name: Cleanup older Docker images
       run: |
