@@ -22,12 +22,12 @@ jobs:
       uses: docker/login-action@v2
       with:
         username: nagagogulan
-        password: dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .github/workflows
+        context: . # Set the context to the root directory of your project
         push: true
         tags: nagagogulan/node1:latest
 
@@ -40,8 +40,13 @@ jobs:
         REPO="integrationninjas/nodejs-app"
         API_URL="https://hub.docker.com/v2/repositories/$REPO/tags"
         TAGS=$(curl -s -u "nagagogulan:dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A" "$API_URL" | jq -r '.results | .[].name')
+        echo "All tags: $TAGS"
+
         SORTED_TAGS=($(echo "${TAGS[@]}" | tr ' ' '\n' | sort -V))
+        echo "Sorted tags: ${SORTED_TAGS[@]}"
+
         KEEP_TAGS=("${SORTED_TAGS[@]: -2}")
+        echo "Tags to keep: ${KEEP_TAGS[@]}"
 
         for tag in "${SORTED_TAGS[@]}"; do
           if [[ ! " ${KEEP_TAGS[@]} " =~ " ${tag} " ]]; then
