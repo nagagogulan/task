@@ -44,6 +44,6 @@ jobs:
           echo "Building and pushing $IMAGE with version $NEW_VERSION"
           
           # Build and push the Docker image
-          docker build -t "yourdockerhubusername/$IMAGE:$NEW_VERSION" .
-          docker push "yourdockerhubusername/$IMAGE:$NEW_VERSION"
+          docker build -t "nagagogulan/$IMAGE:$NEW_VERSION" .
+          docker push nagagogulan/$IMAGE:$NEW_VERSION"
         done
