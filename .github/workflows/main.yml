@@ -36,16 +36,21 @@ jobs:
     - name: Set Docker image version as an environment variable
       run: echo "DOCKER_IMAGE_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
 
-  cleanup:
-    runs-on: ubuntu-latest
-        
-    steps:
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: nagagogulan
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Delete Unused Docker Images
+    - name: Fetch and delete older images
       run: |
-        docker image prune -f
+        REPO="nagagogulan/node1"
+        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
+
+        if [ -z "$IMAGES" ]; then
+          echo "No images found in the repository."
+        else
+          # Retain the latest 3 images
+          LATEST=$(echo "$IMAGES" | sort -V | tail -n 3)
+
+          for IMAGE in $IMAGES; do
+            if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
+              echo "Deleting $REPO:$IMAGE"
+              docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
+            fi
+          done
+        fi
