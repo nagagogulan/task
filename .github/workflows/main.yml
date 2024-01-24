@@ -36,9 +36,12 @@ jobs:
     - name: Set Docker image version as an environment variable
       run: echo "DOCKER_IMAGE_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
 
-   
-    - name: Build and push Docker images
-      run: |
-        docker image rm nagagogulan/node1
+  cleanup:
+     runs-on: ubuntu-latest
+        
+     steps:
+     - name: Delete Unused Docker Images
+       run: |
+        docker image prune -f    
 
 
