@@ -53,14 +53,14 @@ jobs:
        REPO="nagagogulan/node1"
        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
 
-       echo "Found images: $IMAGES"
+      echo "Found images: $IMAGES"
 
-       if [ -z "$IMAGES" ]; then
+        if [ -z "$IMAGES" ]; then
        echo "No images found in the repository."
        else
-        LATEST=$(echo "$IMAGES" | sort -V | tail -n 3)
+       LATEST=$(echo "$IMAGES" | sort -V | tail -n 2)
 
-        for IMAGE in $IMAGES; do
+       for IMAGE in $IMAGES; do
         if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
           echo "Deleting $REPO:$IMAGE"
           docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
