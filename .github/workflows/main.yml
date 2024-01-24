@@ -29,20 +29,5 @@ jobs:
       with:
         context: .github/workflows
         push: true
-        tags: nagagogulan/node1:latest
-
-    - name: Delete containers older than a week
-      uses: snok/container-retention-policy@v2
-      with:
-          image-names: docker-debian-bullseye-min-stage1
-          cut-off: A week ago UTC
-          account-type: org
-          org-name: rubyonracetracks
-          keep-at-least: 1
-          untagged-only: true
-          token: ${{ secrets.SPECIAL_TOKEN }}
-      if: ${{ github.ref == 'refs/heads/main' }}
-
-    - name: Log out of the Docker container registry
-      run: docker logout ghcr.io
-      if: ${{ github.ref == 'refs/heads/main' }}
+        tags: nagagogulan/node1:7
+   
