@@ -34,4 +34,5 @@ jobs:
       with:
         context: .github/workflows
         push: true
-        tags: nagagogulan/node1:${{ steps.get_version.outputs.version }}
+        tags: "nagagogulan/node1:${{ steps.get_version.outputs.version }}"
+
