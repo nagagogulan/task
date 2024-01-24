@@ -39,5 +39,5 @@ jobs:
    
     - name: Build and push Docker images
       run: |
-        context: ..github/workflows/github-action
+        docker rm -f node1 
 
