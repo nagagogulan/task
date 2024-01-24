@@ -38,7 +38,7 @@ jobs:
        LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
     
        for IMAGE in $IMAGES; do
-        if [ "$IMAGE" != "$LATEST" ]; then
+       if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
         echo "Deleting $IMAGE"
         docker rmi nagagogulan/node1:$IMAGE
         fi
