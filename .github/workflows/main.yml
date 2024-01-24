@@ -32,18 +32,15 @@ jobs:
         tags: nagagogulan/node1:tagname
 
 
-    - name: Build and push Docker images
-      run: |
-        # Specify your list of image names
-        IMAGES=("image1" "image2" "image3")
-
-        # Loop through the images and push with version tags
-        for IMAGE in "${IMAGES[@]}"; do
-          # Increment version for each image (you can customize this logic)
-          NEW_VERSION=$(date +'%Y.%m%d.%H%M%S')
-          echo "Building and pushing $IMAGE with version $NEW_VERSION"
+        run: |
+          # Generate a timestamp-based version for tagging
+          VERSION=$(date +'%Y%m%d%H%M%S')
           
-          # Build and push the Docker image
-          docker build -t "nagagogulan/$IMAGE:$NEW_VERSION" .
-          docker push nagagogulan/$IMAGE:$NEW_VERSION"
-        done
+          # Build the Docker image
+          docker build -t nagagogulan/task:$VERSION .
+
+          # Log in to Docker Hub
+          echo $DOCKER_PASSWORD | docker login -u nagagogulan --password-stdin
+
+          # Push the Docker image with version tag
+          docker push nagagogulan/task:$VERSION
