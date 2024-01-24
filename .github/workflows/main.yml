@@ -41,19 +41,44 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Docker
-      uses: docker/setup-docker@v2.6.2
-
+      uses: actions/setup-docker@v2.6.2
 
     - name: Login to Docker Hub
       run: docker login -u nagagogulan -p ${{ secrets.DOCKER_PASSWORD }}
 
-   
-
-    - name: Delete older images
+    - name: Fetch and delete old images
       run: |
+        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/nagagogulan/node1/tags/?page_size=100" | jq -r '.results|.[]|.name')
+        LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
+        
         for IMAGE in $IMAGES; do
           if [ "$IMAGE" != "$LATEST" ]; then
             echo "Deleting $IMAGE"
             docker rmi nagagogulan/node1:$IMAGE
+          fi
+        done
+
+  delete_images:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: actions/setup-docker@v2
+
+    - name: Login to Docker Hub
+      run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Fetch and delete old images
+      run: |
+        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/your_username/your_repo/tags/?page_size=100" | jq -r '.results|.[]|.name')
+        LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
+        
+        for IMAGE in $IMAGES; do
+          if [ "$IMAGE" != "$LATEST" ]; then
+            echo "Deleting $IMAGE"
+            docker rmi your_username/your_repo:$IMAGE
           fi
         done
