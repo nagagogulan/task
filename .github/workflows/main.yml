@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Build and Push to Docker Hub
 
 on:
   push:
@@ -6,21 +6,31 @@ on:
       - main
 
 jobs:
-  build_push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Docker
-      uses: actions/setup-docker@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14' # Choose the appropriate Node.js version
 
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: nagagogulan
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        password: dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .github/workflows
+        push: true
+        tags: nagagogulan/node1:tagname
+
 
     - name: Build and push Docker images
       run: |
