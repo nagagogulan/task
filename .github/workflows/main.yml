@@ -24,7 +24,7 @@ jobs:
         username: nagagogulan
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image with unique version tag
+    - name: Build and push Docker image with a unique version tag
       id: docker_build
       uses: docker/build-push-action@v4
       with:
@@ -50,26 +50,25 @@ jobs:
 
     - name: Fetch and delete old images
       run: |
-       REPO="nagagogulan/node1"
-       IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
+        REPO="nagagogulan/node1"
+        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
 
-       echo "Found images: $IMAGES"
+        echo "Found images: $IMAGES"
 
         if [ -z "$IMAGES" ]; then
-       echo "No images found in the repository."
-       else
-       LATEST=$(echo "$IMAGES" | sort -V | tail -n 2)
+          echo "No images found in the repository."
+        else
+          # Sort images by version and keep the last two
+          LATEST=$(echo "$IMAGES" | sort -V | tail -n 2)
 
-       for IMAGE in $IMAGES; do
-        if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
-          echo "Deleting $REPO:$IMAGE"
-          docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
+          for IMAGE in $IMAGES; do
+            if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
+              echo "Deleting $REPO:$IMAGE"
+              docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
+            fi
+          done
         fi
-        done
-       fi
+
     - name: Debug Docker images
       run: |
-       docker images
-
-
-
+        docker images
