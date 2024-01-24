@@ -40,6 +40,6 @@ jobs:
        for IMAGE in $IMAGES; do
        if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
         echo "Deleting $IMAGE"
-        docker rmi nagagogulan/node1:$IMAGE
+        docker rmi nagagogulan/node:$IMAGE
         fi
        done
