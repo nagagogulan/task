@@ -39,4 +39,4 @@ jobs:
    
     - name: Build and push Docker images
       run: |
-        ./home/tlspc-099/Desktop/github-action
+        ./github-action
