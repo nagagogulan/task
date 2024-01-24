@@ -1,4 +1,4 @@
-name: Build, Push, and Delete Old Docker Images
+name: Build and Push Docker Images
 
 on:
   push:
@@ -13,35 +13,27 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14' # Choose the appropriate Node.js version
-
-    - name: Update version in package.json
-      id: update_version
-      run: |
-       new_version=$(node -p "require('./node-hello-master/package.json').version + 1")
-         echo "Updating version to $new_version in package.json"
-         npm --prefix ./node-hello-master version $new_version
-
-
-    - name: Get updated version
-      id: get_version
-      run: echo "::set-output name=version::$(node -p "require('.node-hello-master/package.json').version")"
+    - name: Set up Docker
+      uses: actions/setup-docker@v2
 
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: nagagogulan
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      id: build_and_push
-      uses: docker/build-push-action@v4
-      with:
-        context: .github/workflows
-        push: true
-        tags: "nagagogulan/node1:${{ steps.get_version.outputs.version }}"
+    - name: Build and push Docker images
+      run: |
+        # Specify your list of image names
+        IMAGES=("image1" "image2" "image3")
 
-        
+        # Loop through the images and push with version tags
+        for IMAGE in "${IMAGES[@]}"; do
+          # Increment version for each image (you can customize this logic)
+          NEW_VERSION=$(date +'%Y.%m%d.%H%M%S')
+          echo "Building and pushing $IMAGE with version $NEW_VERSION"
+          
+          # Build and push the Docker image
+          docker build -t "yourdockerhubusername/$IMAGE:$NEW_VERSION" .
+          docker push "yourdockerhubusername/$IMAGE:$NEW_VERSION"
+        done
