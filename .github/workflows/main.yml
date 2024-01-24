@@ -32,22 +32,19 @@ jobs:
         push: true
         tags: nagagogulan/node1:7
 
+    - name: Trigger Docker Hub automated build
+      run: |
+        curl -X POST "https://cloud.docker.com/api/build/v1/source/$DOCKER_HUB_SOURCE_ID/trigger/$DOCKER_HUB_TRIGGER_TOKEN/"
+
+
     - name: Fetch and delete old images
       run: |
-       IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/nagagogulan/node1/tags/?page_size=100" | jq -r '.results|.[]|.name')
-       LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
-    
-       for IMAGE in $IMAGES; do
-       if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
-        # Check if the image exists locally before attempting to delete
-        if docker image inspect nagagogulan/node1:$IMAGE &> /dev/null; then
-          echo "Deleting $IMAGE"
-          docker rmi nagagogulan/node1:$IMAGE
-        else
-          echo "Image nagagogulan/node1:$IMAGE not found locally. Skipping deletion."
-        fi
-       fi
-       done
+        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/nagagogulan/node1/tags/?page_size=100" | jq -r '.results|.[]|.name')
+        LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
 
-
-
+        for IMAGE in $IMAGES; do
+          if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
+            echo "Deleting $IMAGE"
+            docker rmi nagagogulan/node1:$IMAGE
+          fi
+        done
