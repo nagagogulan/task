@@ -18,23 +18,13 @@ jobs:
       with:
         node-version: '14' # Choose the appropriate Node.js version
 
-    - name: Read current version from file
-      id: read_version
-      run: echo "::set-output name=version::$(cat version.txt || echo 0)"
-
-    - name: Increment version
-      id: increment_version
-      run: |
-        echo $(( ${{ steps.read_version.outputs.version }} + 1 )) > version.txt
-        echo "::set-output name=version::$(cat version.txt)"
-
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: nagagogulan
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image with updated version tag
+    - name: Build and push Docker image with unique version tag
       id: docker_build
       uses: docker/build-push-action@v4
       with:
@@ -42,10 +32,10 @@ jobs:
         push: true
         tags: |
           nagagogulan/node1:latest
-          nagagogulan/node1:v${{ steps.increment_version.outputs.version }}
+          nagagogulan/node1:v${{ github.run_number }}
 
     - name: Set Docker image version as an environment variable
-      run: echo "DOCKER_IMAGE_VERSION=v${{ steps.increment_version.outputs.version }}" >> $GITHUB_ENV
+      run: echo "DOCKER_IMAGE_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
 
   deploy:
     needs: build
@@ -56,6 +46,3 @@ jobs:
       run: |
         echo "Deploying Docker image version $DOCKER_IMAGE_VERSION"
         # Your deployment steps here using the version environment variable
-
-
-        
