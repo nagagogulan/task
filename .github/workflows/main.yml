@@ -31,7 +31,7 @@ jobs:
         context: .github/workflows
         push: true
         tags: |
-          nagagogulan/node1:latest
+          
           nagagogulan/node1:v${{ github.run_number }}
 
     - name: Set Docker image version as an environment variable
