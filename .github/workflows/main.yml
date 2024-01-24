@@ -39,4 +39,5 @@ jobs:
    
     - name: Build and push Docker images
       run: |
-        context: ./github-action/github-action
+        context: ..github/workflows/github-action
+
