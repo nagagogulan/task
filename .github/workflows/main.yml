@@ -58,11 +58,11 @@ jobs:
         if [ -z "$IMAGES" ]; then
           echo "No images found in the repository."
         else
-          # Sort images by version and keep the last two
-          LATEST=$(echo "$IMAGES" | sort -V | tail -n 2)
+          # Sort images by version and keep only the last two
+          LATEST=$(echo "$IMAGES" | grep -E 'v[0-9]+' | sort -t 'v' -k 2 -n | tail -n 2)
 
           for IMAGE in $IMAGES; do
-            if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
+            if [ "$IMAGE" != "latest" ] && ! echo "$LATEST" | grep -q "$IMAGE"; then
               echo "Deleting $REPO:$IMAGE"
               docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
             fi
