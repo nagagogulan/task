@@ -39,4 +39,4 @@ jobs:
    
     - name: Build and push Docker images
       run: |
-        ./github-action
+        context: ./github-action/github-action
