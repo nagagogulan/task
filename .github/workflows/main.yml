@@ -39,5 +39,6 @@ jobs:
    
     - name: Build and push Docker images
       run: |
-        docker rmi -f nagagogulan/node1 
+        docker image rm nagagogulan/node1:v117
+
 
