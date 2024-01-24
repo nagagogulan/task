@@ -31,28 +31,18 @@ jobs:
         push: true
         tags: nagagogulan/node1:latest
 
-  cleanup:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Cleanup older Docker images
-      run: |
-        REPO="integrationninjas/nodejs-app"
-        API_URL="https://hub.docker.com/v2/repositories/$REPO/tags"
-        TAGS=$(curl -s -u "nagagogulan:dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A" "$API_URL" | jq -r '.results | .[].name')
-        echo "All tags: $TAGS"
+    - name: Delete containers older than a week
+      uses: snok/container-retention-policy@v2
+      with:
+          image-names: docker-debian-bullseye-min-stage1
+          cut-off: A week ago UTC
+          account-type: org
+          org-name: rubyonracetracks
+          keep-at-least: 1
+          untagged-only: true
+          token: ${{ secrets.SPECIAL_TOKEN }}
+      if: ${{ github.ref == 'refs/heads/main' }}
 
-        SORTED_TAGS=($(echo "${TAGS[@]}" | tr ' ' '\n' | sort -V))
-        echo "Sorted tags: ${SORTED_TAGS[@]}"
-
-        KEEP_TAGS=("${SORTED_TAGS[@]: -2}")
-        echo "Tags to keep: ${KEEP_TAGS[@]}"
-
-        for tag in "${SORTED_TAGS[@]}"; do
-          if [[ ! " ${KEEP_TAGS[@]} " =~ " ${tag} " ]]; then
-            echo "Deleting tag: $tag"
-            curl -X DELETE -u "nagagogulan:dckr_pat_Ldp7bZ_OIhXDxdWTGZaeRzcXN-A" "$API_URL/$tag/"
-          else
-            echo "Keeping tag: $tag"
-          fi
-        done
+    - name: Log out of the Docker container registry
+      run: docker logout ghcr.io
+      if: ${{ github.ref == 'refs/heads/main' }}
