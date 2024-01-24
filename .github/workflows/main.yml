@@ -36,29 +36,32 @@ jobs:
     - name: Set Docker image version as an environment variable
       run: echo "DOCKER_IMAGE_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
 
-  delete_old_images:
-    needs: build_push
-    runs-on: ubuntu-latest
+   delete_old_images:
+  needs: build_push
+  runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+  steps:
+  - name: Checkout repository
+    uses: actions/checkout@v2
 
-    - name: Set up Docker
-      uses: docker/setup-docker@v2
+  - name: Set up Docker
+    uses: docker/setup-docker@v2
 
-    - name: Login to Docker Hub
-      run: docker login -u nagagogulan -p ${{ secrets.DOCKER_PASSWORD }}
+  - name: Login to Docker Hub
+    run: docker login -u nagagogulan -p ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Fetch and delete old images
-      run: |
-        REPO="nagagogulan/node1"
-        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
-        LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
-        
-        for IMAGE in $IMAGES; do
-          if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
-            echo "Deleting $REPO:$IMAGE"
-            docker rmi $REPO:$IMAGE
-          fi
-        done
+  - name: Fetch and delete old images
+    run: |
+      REPO="nagagogulan/node1"
+      IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
+      LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
+
+      echo "Available images: $IMAGES"
+      echo "Latest version: $LATEST"
+      
+      for IMAGE in $IMAGES; do
+        if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
+          echo "Deleting $REPO:$IMAGE"
+          docker rmi $REPO:$IMAGE
+        fi
+      done
