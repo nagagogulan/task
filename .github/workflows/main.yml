@@ -36,8 +36,6 @@ jobs:
           
        push: true
        tags: nagagogulan/node1:tagname
-        docker build -t nagagogulan/node1:latest -t nagagogulan/node1:v .
-        docker push nagagogulan/node1:latest
-        docker push nagagogulan/node1:v
+        
        
        
