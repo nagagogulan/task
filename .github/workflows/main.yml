@@ -21,9 +21,10 @@ jobs:
     - name: Update version in package.json
       id: update_version
       run: |
-        new_version=$(node -p "require('.node-hello-master/package.json').version + 1")
-        echo "Updating version to $new_version in package.json"
-        npm version $new_version
+       new_version=$(node -p "require('./node-hello-master/package.json').version + 1")
+         echo "Updating version to $new_version in package.json"
+         npm --prefix ./node-hello-master version $new_version
+
 
     - name: Get updated version
       id: get_version
