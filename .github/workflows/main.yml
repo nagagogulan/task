@@ -46,11 +46,7 @@ jobs:
     - name: Login to Docker Hub
       run: docker login -u nagagogulan -p ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Fetch image list
-      run: |
-        IMAGES=$(curl -s https://hub.docker.com/v2/repositories/nagagogulan/node1/tags/?page_size=100 | jq -r '.results|.[]|.name')
-        LATEST=$(echo "$IMAGES" | sort -V | tail -n 1)
-        echo "Latest image: $LATEST"
+   
 
     - name: Delete older images
       run: |
