@@ -39,7 +39,13 @@ jobs:
     
        for IMAGE in $IMAGES; do
        if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
-        echo "Deleting $IMAGE"
-        docker rmi nagagogulan/node:$IMAGE
+        # Check if the image exists locally before attempting to delete
+        if docker image inspect nagagogulan/node1:$IMAGE &> /dev/null; then
+          echo "Deleting $IMAGE"
+          docker rmi nagagogulan/node1:$IMAGE
+        else
+          echo "Image nagagogulan/node1:$IMAGE not found locally. Skipping deletion."
         fi
+       fi
        done
+
