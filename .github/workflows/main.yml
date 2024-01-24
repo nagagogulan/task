@@ -36,12 +36,7 @@ jobs:
     - name: Set Docker image version as an environment variable
       run: echo "DOCKER_IMAGE_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
 
-    - name: Build and push Docker image
-      run: |
-        docker buildx create --use
-        docker buildx inspect
-        docker buildx build --push --tag nagagogulan/node1:latest .
-
+   
   delete_old_images:
     needs: build_push
     runs-on: ubuntu-latest
