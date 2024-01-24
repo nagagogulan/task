@@ -50,13 +50,18 @@ jobs:
 
     - name: Fetch and delete old images
       run: |
-        REPO="nagagogulan/node1"
-        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
+       REPO="nagagogulan/node1"
+       IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
+
+       if [ -z "$IMAGES" ]; then
+        echo "No images found in the repository."
+        else
         LATEST=$(echo "$IMAGES" | sort -V | tail -n 3)
 
-        for IMAGE in $IMAGES; do
-          if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
-            echo "Deleting $REPO:$IMAGE"
-            docker rmi $REPO:$IMAGE
-          fi
-        done
+         for IMAGE in $IMAGES; do
+        if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
+          echo "Deleting $REPO:$IMAGE"
+          docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
+        fi
+       done
+       fi
