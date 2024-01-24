@@ -27,7 +27,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: . # Assuming your Dockerfile is in the root of your project
+        context: .github/workflows
         push: true
         tags: nagagogulan/task:latest, nagagogulan/task:${{ github.sha }}
 
