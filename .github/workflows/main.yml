@@ -41,7 +41,8 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Docker
-      uses: actions/setup-docker@v2
+      uses: docker/setup-docker@v2.6.2
+
 
     - name: Login to Docker Hub
       run: docker login -u nagagogulan -p ${{ secrets.DOCKER_PASSWORD }}
