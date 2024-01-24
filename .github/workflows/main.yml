@@ -48,27 +48,21 @@ jobs:
     - name: Login to Docker Hub
       run: docker login -u nagagogulan -p ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Fetch and delete old images
+    - name: Fetch Docker images
       run: |
-        REPO="nagagogulan/node1"
-        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
+          REPO="your-dockerhub-username/your-repository-name"
+          IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
 
-        echo "Found images: $IMAGES"
+          if [ -z "$IMAGES" ]; then
+            echo "No images found in the repository."
+          else
+            # Retain the latest 2 images
+            LATEST=$(echo "$IMAGES" | sort -V | tail -n 2)
 
-        if [ -z "$IMAGES" ]; then
-          echo "No images found in the repository."
-        else
-          # Sort images by version and keep only the last two
-          LATEST=$(echo "$IMAGES" | grep -E 'v[0-9]+' | sort -t 'v' -k 2 -n | tail -n 2)
-
-          for IMAGE in $IMAGES; do
-            if [ "$IMAGE" != "latest" ] && ! echo "$LATEST" | grep -q "$IMAGE"; then
-              echo "Deleting $REPO:$IMAGE"
-              docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
-            fi
-          done
-        fi
-
-    - name: Debug Docker images
-      run: |
-        docker images
+            for IMAGE in $IMAGES; do
+              if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
+                echo "Deleting $REPO:$IMAGE"
+                docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
+              fi
+            done
+          fi
