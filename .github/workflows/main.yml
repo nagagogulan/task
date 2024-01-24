@@ -67,3 +67,6 @@ jobs:
         fi
         done
        fi
+    - name: Debug Docker images
+      run: |
+       docker images
