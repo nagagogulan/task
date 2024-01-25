@@ -33,24 +33,20 @@ jobs:
         tags: |
           nagagogulan/node1:v${{ github.run_number }}
 
-    - name: Set Docker image version as an environment variable
-      run: echo "DOCKER_IMAGE_VERSION=v${{ github.run_number }}" >> $GITHUB_ENV
 
-    - name: Fetch and delete older images
-      run: |
-        REPO="nagagogulan/node1"
-        IMAGES=$(curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/?page_size=100" | jq -r '.results|.[]|.name')
+  delete-docker-image:
+    runs-on: ubuntu-latest
 
-        if [ -z "$IMAGES" ]; then
-          echo "No images found in the repository."
-        else
-          # Retain the latest 3 images
-          LATEST=$(echo "$IMAGES" | sort -V | tail -n 3)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-          for IMAGE in $IMAGES; do
-            if [ "$IMAGE" != "latest" ] && [ "$IMAGE" != "$LATEST" ]; then
-              echo "Deleting $REPO:$IMAGE"
-              docker rmi $REPO:$IMAGE || echo "Error deleting $REPO:$IMAGE"
-            fi
-          done
-        fi
+      - name: Delete Docker Image
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          # Authenticate with Docker Hub
+          echo $DOCKERHUB_TOKEN | docker login -u nagagogulan --password-stdin
+
+          # Delete the specific Docker image
+          docker manifest inspect nagagogulan/node1:120 && docker push --delete nagagogulan/node1:120
