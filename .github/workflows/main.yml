@@ -46,7 +46,7 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           # Authenticate with Docker Hub
-          echo $DOCKERHUB_TOKEN | docker login -u nagagogulan --password-stdin
+          echo $DOCKERHUB_TOKEN | docker login -u nagagogulan --password: ${{ secrets.DOCKER_PASSWORD }}
 
           # Delete the specific Docker image
           docker manifest inspect nagagogulan/node1:120 && docker push --delete nagagogulan/node1:120
