@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Docker Hub Repository Name
+REPO_NAME="nagagogulan"
+
+# Docker Hub Username
+USERNAME="nagagogulan"
+
+# Docker Hub Password
+PASSWORD="Gokul28@"
+
+# List all tags of the repository
+IMAGE_TAGS=$(curl -s -H "Authorization: JWT $(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'"$USERNAME"'", "password": "'"$PASSWORD"'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)" "https://hub.docker.com/v2/repositories/$USERNAME/$REPO_NAME/tags/?page_size=10000" | jq -r '.results|.[]|.name')
+
+# Exclude the latest tag (to keep it)
+EXCLUDED_TAGS=$(echo "$IMAGE_TAGS" | grep -v "latest")
+
+# Loop through each tag and delete it
+for TAG in $EXCLUDED_TAGS; do
+  echo "Deleting image: $USERNAME/$REPO_NAME:$TAG"
+  curl -X DELETE -s -H "Authorization: JWT $(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'"$USERNAME"'", "password": "'"$PASSWORD"'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)" "https://hub.docker.com/v2/repositories/$USERNAME/$REPO_NAME/tags/$TAG/"
+done
+
+echo "Old images deleted successfully."
