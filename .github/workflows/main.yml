@@ -34,19 +34,8 @@ jobs:
           nagagogulan/node1:v${{ github.run_number }}
 
 
-  delete-docker-image:
-    runs-on: ubuntu-latest
+    - name: Get all Docker image IDs
+      run: docker images -q > image-ids.txt
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Delete Docker Image
-        env:
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: |
-          # Authenticate with Docker Hub
-          echo $DOCKERHUB_TOKEN 
-
-          # Delete the specific Docker image
-          docker manifest inspect nagagogulan/node1:120 && docker push --delete nagagogulan/node1:120
+    - name: Delete all Docker images
+      run: docker rmi $(cat image-ids.txt)
